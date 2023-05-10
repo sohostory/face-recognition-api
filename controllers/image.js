@@ -1,40 +1,36 @@
-const returnClarifaiRequestOptions = (imageUrl) => {
-  const raw = JSON.stringify({
-    user_app_id: {
-      user_id: "sohostory",
-      app_id: "face-detection-app",
-    },
-    inputs: [
-      {
-        data: {
-          image: {
-            url: imageUrl,
-          },
-        },
-      },
-    ],
-  });
+const { ClarifaiStub, grpc } = require("clarifai-nodejs-grpc");
 
-  const requestOptions = {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      Authorization: "Key " + "",
-    },
-    body: raw,
-  };
-  return requestOptions;
-};
+const stub = ClarifaiStub.grpc();
+
+const metadata = new grpc.Metadata();
+metadata.set("authorization", "Key " + "b18ff45e52604d7c83826adc0d4b98ab");
 
 const handleApiCall = (req, res) => {
-  fetch(
-    `https://api.clarifai.com/v2/models/face-detection/versions/6dc7e46bc9124c5c8824be4822abe105/outputs`,
-    returnClarifaiRequestOptions(req.body.input)
-  )
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((err) => res.status(400).json("unable to work with api"));
+  stub.PostModelOutputs(
+    {
+      user_app_id: {
+        user_id: "clarifai",
+        app_id: "main",
+      },
+      model_id: "face-detection",
+
+      inputs: [{ data: { image: { url: req.body.input } } }],
+    },
+    metadata,
+    (err, response) => {
+      if (err) {
+        throw new Error(err);
+      }
+
+      if (response.status.code !== 10000) {
+        throw new Error(
+          "Post model outputs failed, status: " + response.status.description
+        );
+      }
+      
+      res.json(response);
+    }
+  );
 };
 
 const handleImage = (req, res, db) => {
