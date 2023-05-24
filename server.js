@@ -2,11 +2,13 @@ const express = require("express");
 const bcrypt = require("bcrypt-nodejs");
 const cors = require("cors");
 const knex = require("knex");
+require("dotenv").config();
 
 const register = require("./controllers/register");
 const signin = require("./controllers/signin");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image");
+const req = require("express/lib/request");
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
 const db = knex({
