@@ -27,6 +27,7 @@ app.use(
       "http://smartbrain.sohostory.com/",
       "https://smart-brain-sohostory.herokuapp.com/",
     ],
+    methods: ["GET", "POST", "PUT"],
   })
 );
 
